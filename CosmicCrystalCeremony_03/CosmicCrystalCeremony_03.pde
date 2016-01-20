@@ -11,6 +11,7 @@ PGraphics crystalLayer;
 PImage wallBack;
 PImage wallMountains;
 PImage floorBack;
+PImage rainbow;
 
 CornerPinSurface floorSurface;
 CornerPinSurface wallSurface;
@@ -20,6 +21,8 @@ PImage backgroundRender;
 PVector[] crystalVertex;
 float crystalSidesUVs;
 
+float rainbowPos;
+
 float layersOpacity;
 
 ArrayList<Comet> comets;
@@ -27,6 +30,7 @@ ArrayList<Comet> comets;
 void setup() {
   size(1280, 720, P3D);
   frameRate(30);
+
 
   controlGui = new ControlP5(this);
   controlGui.addSlider("crystalSidesUVs").setRange(0.6, 1).setPosition(20, 40).setDefaultValue(1).setLabel("CRYSTAL SIDE VERTEX UVs");
@@ -40,6 +44,7 @@ void setup() {
   wallBack = loadImage("wall.png");
   floorBack = loadImage("floor.png");
   wallMountains = loadImage("wallMountains.png");
+  rainbow = loadImage("rainbow.png");
 
   crystalVertex = new PVector[4];
   crystalVertex[0] = new PVector(645, 239, 1);
@@ -49,6 +54,7 @@ void setup() {
 
   crystalSidesUVs = 1;
   layersOpacity = 1;
+  rainbowPos = 0;
 
   comets = new ArrayList<Comet>();
   createComets(20);
@@ -57,41 +63,42 @@ void setup() {
 }
 
 void draw() {
-  background(backgroundRender);
-  //background(0);
+  //background(backgroundRender); // THIS CAUSES SCREEN FLICKERING
+  background(0);
+  tint(255);
+  image(backgroundRender, 0, 0);
 
   //drawBackLines(color(255, 255, 0));
 
   floorLayer.beginDraw();
   floorLayer.background(floorBack);
-  //drawBackLines(floorLayer, color(255, 0, 0));
   floorLayer.endDraw();
-  
+
 
   wallLayer.beginDraw();
   wallLayer.background(0);
-  
-  wallLayer.image(wallBack,0,0);
+  wallLayer.image(wallBack, 0, 0);
 
   //drawBackLines(wallLayer, color(0, 255, 0));
-  
+
   //wallLayer.pushMatrix();
   //wallLayer.translate(0,0,-10);
   for (Comet comet : comets) {
-
     if (comet.collided()) {
       resetComet(comet);
     }
     comet.render();
   }
-  
-    wallLayer.image(wallMountains, 0,0);
+
+  wallLayer.image(wallMountains, 0, 0);
 
   wallLayer.endDraw();
 
+  tint(255, layersOpacity * 255);
   crystalLayer.beginDraw();
   crystalLayer.background(0);
-  drawBackLines(crystalLayer, color(255, 255, 0));  
+  //drawBackLines(crystalLayer, color(255, 255, 0));  
+  drawRainbow();
   crystalLayer.endDraw();
 
   textureMode(NORMAL);
@@ -122,19 +129,21 @@ void createSurfacesAndLayers() {
   wallSurface = keyStoner.createCornerPinSurface(wallLayer.width, wallLayer.height, 10);
 }
 
+void drawRainbow() {
+
+  rainbowPos-=1;
+  crystalLayer.image(rainbow, rainbowPos, 0);
+  crystalLayer.image(rainbow, rainbowPos + rainbow.width, 0);
+  if (rainbowPos < -rainbow.width) {
+    rainbowPos = 0;
+  }
+}
+
 public void drawBackLines(PGraphics onLayer, color lineColor) {
   onLayer.stroke(lineColor);
   float offset = frameCount % 40;
   for (int i = 0; i < onLayer.width; i += 40) {
     onLayer.line(i + offset, 0, i + offset, onLayer.height);
-  }
-}
-
-public void drawBackLines(color lineColor) {
-  stroke(lineColor);
-  float offset = frameCount % 40;
-  for (int i = 0; i < width; i += 40) {
-    line(i + offset, 0, i + offset, height);
   }
 }
 

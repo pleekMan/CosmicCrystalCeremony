@@ -12,17 +12,17 @@ class Particle {
   void render() {
     c+=colorIncrement;
     
-    wallLayer.fill(c);
+    wallLayer.fill(255,c);
     wallLayer.noStroke();
     //wallLayer.stroke(c);
-    wallLayer.ellipse(x,y,2,2);
+    wallLayer.ellipse(x,y,3,3);
   }
 
   void reset(float _x, float _y) {
     x = _x;
     y = _y;
     c = 255;
-    colorIncrement = random(-3,-0.5);
+    colorIncrement = random(-5,-0.5);
     
     //println(x + " : " + y + " : " + c);
     //println(x);

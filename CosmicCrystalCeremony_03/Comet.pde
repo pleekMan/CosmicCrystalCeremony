@@ -14,6 +14,7 @@ class Comet {
 
   PVector miniCrystalPos;
   float miniCrystalScale;
+  color miniCrystalColor;
 
   Comet() {
     finalPos = new PVector();
@@ -26,8 +27,8 @@ class Comet {
 
     blast= loadImage("whiteBlast.png");
     blastPos = new PVector(-1000, -1000);
-    
-    miniCrystalPos = new PVector(-1000,-1000);
+
+    miniCrystalPos = new PVector(-1000, -1000);
   }
 
   Comet(PVector _finalPos, PVector _vel, float _size) {
@@ -35,7 +36,7 @@ class Comet {
 
     blast= loadImage("whiteBlast.png");
     blastPos = new PVector(-500, 500);
-     miniCrystalPos = new PVector(-1000,-1000);
+    miniCrystalPos = new PVector(-1000, -1000);
 
 
     reset(_finalPos, _vel, _size);
@@ -53,7 +54,7 @@ class Comet {
 
     wallLayer.noFill();
     wallLayer.stroke(cometColor);
-    wallLayer.line(pos.x, pos.y, pos.x - ((vel.x * 200)), pos.y - ((vel.y * 200)));
+    wallLayer.line(pos.x, pos.y, pos.x - ((vel.x * 150)), pos.y - ((vel.y * 150)));
     wallLayer.noStroke();
     wallLayer.fill(cometColor);
     wallLayer.ellipse(pos.x, pos.y, cometSize, cometSize);
@@ -67,8 +68,21 @@ class Comet {
       }
     }
 
+    /*
+    float blastScaleY = 1;
+     if (pos.x > (wallLayer.width * 0.5)) {
+     blastScaleY *= 2;
+     }
+     */
+    //wallLayer.image(blast, blastPos.x - (blast.width * 0.5), blastPos.y - (blast.height * 0.8), blast.width, blast.width * blastScaleY);
+    
+    float blastTallMountainCorrection = 0;
+    if (blastPos.x > 750) {
+      blastTallMountainCorrection = -100;
+    }
     wallLayer.tint(255, 255 * blastOpacity);
-    wallLayer.image(blast, blastPos.x - (blast.width * 0.5), blastPos.y - (blast.height * 0.8));
+    wallLayer.image(blast, blastPos.x - (blast.width * 0.5), blastPos.y - (blast.height * 0.8) + blastTallMountainCorrection);
+
     wallLayer.tint(255);
 
     drawMiniCrystal();
@@ -82,20 +96,20 @@ class Comet {
   }
 
   void drawMiniCrystal() {
-    
-    miniCrystalPos.add(0,-vel.y,0);
-    
+
+    miniCrystalPos.add(0, -vel.y, 0);
+
     wallLayer.noFill();
-    wallLayer.stroke(cometColor,125);
-    
+    wallLayer.stroke(miniCrystalColor, 125);
+
     wallLayer.pushMatrix();
     wallLayer.translate(miniCrystalPos.x, miniCrystalPos.y);
     wallLayer.scale(miniCrystalScale);
-    
+
     wallLayer.quad(0, -20, 10, 0, 0, 20, -10, 0);
-    wallLayer.ellipse(0,0,5,10);
+    wallLayer.ellipse(0, 0, 5, 10);
     //wallLayer.quad(0, -20, 5, 0, 0, 20, -5, 0);
-    
+
     wallLayer.popMatrix();
   }
 
@@ -103,15 +117,18 @@ class Comet {
 
     blastOpacity = 1;
     blastPos.set(pos);
-    
+
     miniCrystalPos.set(pos);
     miniCrystalScale = random(1);
+    //miniCrystalColor = color(random(255), random(255), random(255));
+    miniCrystalColor = color(cometColor,150);
+
 
     finalPos = _finalPos;
     cometSize = _size;
     vel = _vel;
     pos = calculateInitialPos(finalPos);
-    cometColor = color(255, random(150, 255));
+    cometColor = color(255, random(150, 240));
   }
 
   public void createParticles() {
