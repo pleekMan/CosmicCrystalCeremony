@@ -9,6 +9,7 @@ PGraphics wallLayer;
 PGraphics crystalLayer;
 
 PImage wallBack;
+PImage wallMountains;
 PImage floorBack;
 
 CornerPinSurface floorSurface;
@@ -21,20 +22,24 @@ float crystalSidesUVs;
 
 float layersOpacity;
 
+ArrayList<Comet> comets;
+
 void setup() {
   size(1280, 720, P3D);
+  frameRate(30);
 
   controlGui = new ControlP5(this);
   controlGui.addSlider("crystalSidesUVs").setRange(0.6, 1).setPosition(20, 40).setDefaultValue(1).setLabel("CRYSTAL SIDE VERTEX UVs");
-  controlGui.addSlider("layersOpacity").setRange(0,1).setPosition(20,60).setDefaultValue(1).setLabel("SURFACES ALPHA");
-  controlGui.addFrameRate().setInterval(60).setPosition(20,20);
-  
+  controlGui.addSlider("layersOpacity").setRange(0, 1).setPosition(20, 60).setDefaultValue(1).setLabel("SURFACES ALPHA");
+  controlGui.addFrameRate().setInterval(60).setPosition(20, 20);
+
   backgroundRender = loadImage("Ceremony Espacio 3D.png");
   keyStoner = new Keystone(this);
-  
+
   createSurfacesAndLayers();
   wallBack = loadImage("wall.png");
   floorBack = loadImage("floor.png");
+  wallMountains = loadImage("wallMountains.png");
 
   crystalVertex = new PVector[4];
   crystalVertex[0] = new PVector(645, 239, 1);
@@ -44,20 +49,44 @@ void setup() {
 
   crystalSidesUVs = 1;
   layersOpacity = 1;
+
+  comets = new ArrayList<Comet>();
+  createComets(20);
+
+  keyStoner.load();
 }
 
 void draw() {
   background(backgroundRender);
   //background(0);
 
+  //drawBackLines(color(255, 255, 0));
+
   floorLayer.beginDraw();
   floorLayer.background(floorBack);
   //drawBackLines(floorLayer, color(255, 0, 0));
   floorLayer.endDraw();
+  
 
   wallLayer.beginDraw();
-  wallLayer.background(wallBack);
+  wallLayer.background(0);
+  
+  wallLayer.image(wallBack,0,0);
+
   //drawBackLines(wallLayer, color(0, 255, 0));
+  
+  //wallLayer.pushMatrix();
+  //wallLayer.translate(0,0,-10);
+  for (Comet comet : comets) {
+
+    if (comet.collided()) {
+      resetComet(comet);
+    }
+    comet.render();
+  }
+  
+    wallLayer.image(wallMountains, 0,0);
+
   wallLayer.endDraw();
 
   crystalLayer.beginDraw();
@@ -80,12 +109,13 @@ void draw() {
   floorSurface.render(floorLayer);
   wallSurface.render(wallLayer);
 
-  //image(crystalLayer,mouseX,mouseY);
+
+  //image(wallLayer,mouseX,mouseY);
 }
 
 void createSurfacesAndLayers() {
   floorLayer = createGraphics(1000, 400, P2D);
-  wallLayer =createGraphics(1000, 800, P2D);
+  wallLayer = createGraphics(1000, 800, P2D);
   crystalLayer = createGraphics(500, 700, P2D);
 
   floorSurface = keyStoner.createCornerPinSurface(floorLayer.width, floorLayer.height, 10);
@@ -100,8 +130,35 @@ public void drawBackLines(PGraphics onLayer, color lineColor) {
   }
 }
 
+public void drawBackLines(color lineColor) {
+  stroke(lineColor);
+  float offset = frameCount % 40;
+  for (int i = 0; i < width; i += 40) {
+    line(i + offset, 0, i + offset, height);
+  }
+}
+
+public void createComets(int count) {
+  for (int i=0; i<count; i++) {
+    Comet newComet = new Comet();
+    resetComet(newComet);
+    comets.add(newComet);
+  }
+}
+
+public void resetComet(Comet _comet) {
+  float yVel = random(0.3, 1.5);
+  PVector collisionPoint = new PVector(random(0, wallLayer.width), random(638, 677));
+  PVector vel = new PVector(yVel * 0.5, yVel);
+  float _size = random(2, 10);
+  _comet.reset(collisionPoint, vel, _size);
+}
+
 public boolean mouseOver(PVector _point) {
   return dist(_point.x, _point.y, mouseX, mouseY) < 20;
+}
+
+public void mousePressed() {
 }
 
 public void mouseDragged() {
@@ -121,17 +178,17 @@ void keyPressed() {
   switch(key) {
     /*
   case 'q':
-    crystalSidesUVs+=0.1;
-    crystalSidesUVs = constrain(crystalSidesUVs, 0.6, 1);
-    break;
-  case 'a':
-    crystalSidesUVs-=0.1;
-    crystalSidesUVs = constrain(crystalSidesUVs, 0.6, 1);
-    break;
-    */
+     crystalSidesUVs+=0.1;
+     crystalSidesUVs = constrain(crystalSidesUVs, 0.6, 1);
+     break;
+     case 'a':
+     crystalSidesUVs-=0.1;
+     crystalSidesUVs = constrain(crystalSidesUVs, 0.6, 1);
+     break;
+     */
 
   case 'g':
-    if(controlGui.isVisible()){
+    if (controlGui.isVisible()) {
       controlGui.hide();
     } else {
       controlGui.show();
