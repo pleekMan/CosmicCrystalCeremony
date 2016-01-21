@@ -87,7 +87,7 @@ class Comet {
 
     drawMiniCrystal();
 
-    blastOpacity -= 0.02;
+    blastOpacity -= 0.01;
     blastOpacity = constrain(blastOpacity, 0, 1);
   }
 
@@ -109,9 +109,9 @@ class Comet {
     wallLayer.quad(0, -20, 10, 0, 0, 20, -10, 0);
     wallLayer.ellipse(0, 0, 5, 10);
 
-    wallLayer.translate(0, vel.y * 20);
-    wallLayer.stroke(miniCrystalColor, 50);
-    wallLayer.line(0,0,0,vel.y * 30);
+    //wallLayer.translate(0, vel.y * 20);
+    //wallLayer.stroke(miniCrystalColor, 50);
+    //wallLayer.line(0,0,0,vel.y * 30);
     
     wallLayer.popMatrix();
   }

@@ -12,6 +12,7 @@ PImage wallBack;
 PImage wallMountains;
 PImage floorBack;
 PImage rainbow;
+PImage arc;
 
 CornerPinSurface floorSurface;
 CornerPinSurface wallSurface;
@@ -48,6 +49,7 @@ void setup() {
   floorBack = loadImage("floor.png");
   wallMountains = loadImage("wallMountains.png");
   rainbow = loadImage("rainbow.png");
+  arc = loadImage("arc.png");
 
   crystalVertex = new PVector[4];
   crystalVertex[0] = new PVector(645, 239, 1);
@@ -97,6 +99,8 @@ void draw() {
   }
 
   wallLayer.image(wallMountains, 0, 0);
+  
+  wallLayer.image(arc,0,0);
 
   wallLayer.endDraw();
 
