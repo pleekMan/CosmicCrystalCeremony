@@ -27,15 +27,18 @@ float layersOpacity;
 
 ArrayList<Comet> comets;
 
+Shimmers shimmers;
+
 void setup() {
   size(1280, 720, P3D);
   frameRate(30);
 
 
   controlGui = new ControlP5(this);
-  controlGui.addSlider("crystalSidesUVs").setRange(0.6, 1).setPosition(20, 40).setDefaultValue(1).setLabel("CRYSTAL SIDE VERTEX UVs");
+  controlGui.addSlider("crystalSidesUVs").setRange(0.51, 1).setPosition(20, 40).setDefaultValue(1).setLabel("CRYSTAL SIDE VERTEX UVs");
   controlGui.addSlider("layersOpacity").setRange(0, 1).setPosition(20, 60).setDefaultValue(1).setLabel("SURFACES ALPHA");
   controlGui.addFrameRate().setInterval(60).setPosition(20, 20);
+  controlGui.addSlider("shimmerScale").setRange(0,1).setPosition(20,80).setDefaultValue(0.75).setLabel("CRYSTAL SHIMMER SCALE");
 
   backgroundRender = loadImage("Ceremony Espacio 3D.png");
   keyStoner = new Keystone(this);
@@ -52,12 +55,14 @@ void setup() {
   crystalVertex[2] = new PVector(645, 575, 1);
   crystalVertex[3] = new PVector(480, 530, 1);
 
-  crystalSidesUVs = 1;
+  crystalSidesUVs = 0.62;
   layersOpacity = 1;
   rainbowPos = 0;
 
   comets = new ArrayList<Comet>();
   createComets(20);
+  
+  shimmers = new Shimmers();
 
   keyStoner.load();
 }
@@ -65,13 +70,14 @@ void setup() {
 void draw() {
   //background(backgroundRender); // THIS CAUSES SCREEN FLICKERING
   background(0);
-  tint(255);
-  image(backgroundRender, 0, 0);
+  //tint(255);
+  //image(backgroundRender, 0, 0);
 
   //drawBackLines(color(255, 255, 0));
 
   floorLayer.beginDraw();
   floorLayer.background(floorBack);
+  shimmers.render();
   floorLayer.endDraw();
 
 
@@ -104,9 +110,9 @@ void draw() {
   textureMode(NORMAL);
   beginShape();
   texture(crystalLayer);
-  vertex(crystalVertex[0].x, crystalVertex[0].y, crystalVertex[0].z, 0.5, 0);
+  vertex(crystalVertex[0].x, crystalVertex[0].y, crystalVertex[0].z, 0.51, 0);
   vertex(crystalVertex[1].x, crystalVertex[1].y, crystalVertex[1].z, crystalSidesUVs, 1);
-  vertex(crystalVertex[2].x, crystalVertex[2].y, crystalVertex[2].z, 0.5, 1);
+  vertex(crystalVertex[2].x, crystalVertex[2].y, crystalVertex[2].z, 0.51, 1);
   vertex(crystalVertex[3].x, crystalVertex[3].y, crystalVertex[3].z, 1 - crystalSidesUVs, 1);
   endShape(CLOSE);
   textureMode(IMAGE);
@@ -165,6 +171,10 @@ public void resetComet(Comet _comet) {
 
 public boolean mouseOver(PVector _point) {
   return dist(_point.x, _point.y, mouseX, mouseY) < 20;
+}
+
+public void shimmerScale(float _value){
+  shimmers.setScale(_value);
 }
 
 public void mousePressed() {
